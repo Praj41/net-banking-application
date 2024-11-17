@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+        }
+        .dashboard-container {
+            width: 80%;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .user-info {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            color: #444;
+            font-family: monospace;
+        }
+        .field {
+            font-weight: bold;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <h2>User Dashboard</h2>
+    <div id="userInfo" class="user-info">Loading user information...</div>
+
+    <!-- Buttons for additional actions -->
+    <div class="buttons">
+        <button class="button" onclick="seeTransactionHistory()">See Transaction History</button>
+        <button class="button" onclick="makeTransaction()">Make Transaction</button>
+        <button class="button" onclick="getLoan()">Get Loan</button>
+    </div>
+</div>
+
+<script>
+    async function fetchUserInfo() {
+        const token = localStorage.getItem('jwt');
+        const userInfoElement = document.getElementById('userInfo');
+
+        try {
+            const response = await fetch('http://localhost:8080/userinfo', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch user info');
+            }
+
+            const data = await response.json();
+
+            // Format the user info data
+            const formattedData = `
+          <div><span class="field">User ID:</span> ${data.id}</div>
+          <div><span class="field">Username:</span> ${data.userName}</div>
+          <div><span class="field">Email:</span> ${data.email}</div>
+          <div><span class="field">Phone Number:</span> ${data.phoneNumber}</div>
+          <div><span class="field">Account Details:</span> ${data.accountDetails.length > 0 ? JSON.stringify(data.accountDetails) : 'No accounts available'}</div>
+          <div><span class="field">Transactions:</span> ${data.transactions.length > 0 ? JSON.stringify(data.transactions) : 'No transactions available'}</div>
+        `;
+
+            userInfoElement.innerHTML = formattedData;
+        } catch (error) {
+            userInfoElement.textContent = 'Error fetching user information.';
+            console.error(error);
+        }
+    }
+
+    // Call the fetchUserInfo function on page load
+    fetchUserInfo();
+
+    // Functions for each button's action
+    function seeTransactionHistory() {
+        window.location.href = 'transactionHistory.html';
+
+        // You can add functionality to fetch and display transaction history here
+    }
+
+    function makeTransaction() {
+        window.location.href = 'makeTransaction.html';
+
+        //alert("Make Transaction function called.");
+        // You can add functionality to navigate to the make transaction page or form
+    }
+
+    function getLoan() {
+        alert("Get Loan function called.");
+        // You can add functionality to navigate to the loan application page or form
+    }
+</script>
+</body>
+</html>
